@@ -141,7 +141,7 @@ export const getProfile = async (req, res, next) => {
         res.status(200).json({
             success: true,
             statuscode: 200,
-            data : {
+            data: {
                 id: user._id,
                 username: user.username,
                 email: user.email,
@@ -163,7 +163,7 @@ export const getProfile = async (req, res, next) => {
 
 export const updateProfile = async (req, res, next) => {
     try {
-        const {username, email, profileImage} = req.body;
+        const { username, email, profileImage } = req.body;
 
         const user = await User.findById(req.user._id);
 
@@ -175,16 +175,16 @@ export const updateProfile = async (req, res, next) => {
             });
         }
 
-        if(username) user.username = username;
-        if(email) user.email = email;
-        if(profileImage) user.profileImage = profileImage;
+        if (username) user.username = username;
+        if (email) user.email = email;
+        if (profileImage) user.profileImage = profileImage;
 
         await user.save();
 
         res.status(200).json({
             success: true,
             statuscode: 200,
-            data : {
+            data: {
                 id: user._id,
                 username: user.username,
                 email: user.email,
@@ -192,6 +192,7 @@ export const updateProfile = async (req, res, next) => {
             },
             message: "User profile updated successfully",
         });
+
     } catch (error) {
         next(error);
     }
@@ -203,9 +204,10 @@ export const updateProfile = async (req, res, next) => {
 
 export const changePassword = async (req, res, next) => {
     try {
-        const {currentPassword, newPassword} = req.body;
+        const { currentPassword, newPassword } = req.body;
 
-        const user = await User.findById(req.user._id);
+        // Add .select('+password') to explicitly include the password field
+        const user = await User.findById(req.user._id).select('+password');
 
         if (!user) {
             return res.status(404).json({
@@ -215,7 +217,7 @@ export const changePassword = async (req, res, next) => {
             });
         }
 
-        if(!currentPassword || !newPassword) {
+        if (!currentPassword || !newPassword) {
             return res.status(400).json({
                 success: false,
                 error: "Current password and new password are required",
